@@ -21,6 +21,7 @@ This package is kind of an sdk for NewsAPI (http://newsapi.org).
 ## Root config
 baseApiUrl
 - (string, optional, default: http://newsapi.org/v2)
+
 apiKey: client key for your account.
 - (string, required)
 
