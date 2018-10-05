@@ -20,45 +20,25 @@ This package is kind of an sdk for NewsAPI (http://newsapi.org).
 
 ## Root config
 - baseApiUrl
-  - optional: true
-  - default: http://newsapi.org/v2
+  - (string, optional, default: http://newsapi.org/v2)
 - apiKey: client key for your account.
-  - optional: false
+  - (string, required)
 
 ## daily refresh config
 - remainingRequests: number of requests remaining for the day
-  - type: int
-  - optional: false
+  - (int, required)
 - sourceIds: articles will be fetched for these source Ids in a round-robin batched fashion.
-  - type: []string
-  - optional: false
+  - ([]string, required)
 - sourcesBatchSize: articles are fetched for sources in batch. This parameter specifies number of sources in one batch.
-  - type: int
-  - optional: true
-  - default: 20
-  - min: 1
-  - max: 20
+  - (int, optional:20, [1, 20])
 - startPageNum
-  - type: int
-  - optional: true
-  - default: 1
-  - min: 1
+  - (int, optional:1, [1, ])
 - pageSize: articles are paginated. pageSize specifies number of articles in one request.
-  - type: int
-  - optional: true
-  - default: 10
-  - min: 1
-  - max: 100
+  - (int, optional:10, [1, 100])
 - lastMomentMinutes: number of minutes to subtract from the end of day. At this threshold time, fetching would stop for the day. // TODO: better name
-  - type: int
-  - optional: true
-  - default: 30
-  - min: 1
+  - (int, optional:30, [1, ])
 - sleepSeconds: after fetching 1 page for all the sources provided (in batch), this parameter specifies how many seconds to sleep for
-  - type: int
-  - optional: true
-  - default: 60
-  - min: 0
+  - (int, optional:60, [1, ])
 
 # TODO
 
