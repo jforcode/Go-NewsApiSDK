@@ -1,6 +1,8 @@
+# News API SDK in Go
+
 This package is kind of an sdk for NewsAPI (http://newsapi.org).
 
-# Features
+## Features
 
 - fetch sources
   - fetches sources from {{ baseApiUrl }}/sources
@@ -16,16 +18,16 @@ This package is kind of an sdk for NewsAPI (http://newsapi.org).
     - chNumTransactionsUpdated: channel of type int. Used to communicate the number of transactions done by the routine.
     - chError: channel of type error. Used to communicate any errors in the routine.
 
-# Configurable
+## Configurable
 
-## Root config
+### Root config
 baseApiUrl
 - (string, optional, default: http://newsapi.org/v2)
 
 apiKey: client key for your account.
 - (string, required)
 
-## Daily Refresh config
+### Daily Refresh config
 remainingRequests
 - number of requests remaining for the day
 - (int, required)
@@ -53,7 +55,7 @@ sleepSeconds
 - after fetching 1 page for all the sources provided (in batch), this parameter specifies how many seconds to sleep for
 - (int, optional:60, [1, ])
 
-# TODO
+## TODO
 
 - support all options (q, domains, excludeDomains etc.) for fetching articles
 - support all options (category, language etc.) for fetching sources
