@@ -27,21 +27,27 @@ apiKey: client key for your account.
 ## Daily Refresh config
 remainingRequests
 - number of requests remaining for the day
-  - (int, required)
+- (int, required)
+
 sourceIds
 - articles will be fetched for these source Ids in a round-robin batched fashion.
 - ([]string, required)
+
 sourcesBatchSize
 - articles are fetched for sources in batch. This parameter specifies number of sources in one batch.
 - (int, optional:20, [1, 20])
+
 startPageNum
 - (int, optional:1, [1, ])
+
 pageSize
 - articles are paginated. pageSize specifies number of articles in one request.
 - (int, optional:10, [1, 100])
+
 lastMomentMinutes
 - number of minutes to subtract from the end of day. At this threshold time, fetching would stop for the day. // TODO: better name
 - (int, optional:30, [1, ])
+
 sleepSeconds
 - after fetching 1 page for all the sources provided (in batch), this parameter specifies how many seconds to sleep for
 - (int, optional:60, [1, ])
