@@ -24,10 +24,10 @@ type ApiSource struct {
 }
 
 type ApiSourcesResponse struct {
-	Status       string      `json:"status"`
-	Sources      []ApiSource `json:"sources"`
-	ErrorCode    string      `json:"code"`
-	ErrorMessage string      `json:"message"`
+	Status       string       `json:"status"`
+	Sources      []*ApiSource `json:"sources"`
+	ErrorCode    string       `json:"code"`
+	ErrorMessage string       `json:"message"`
 }
 
 type ApiArticleSource struct {
@@ -46,9 +46,9 @@ type ApiArticle struct {
 }
 
 type ApiArticlesResponse struct {
-	Status       string       `json:"status"`
-	TotalResults int          `json:"totalResults"`
-	Articles     []ApiArticle `json:"articles"`
-	ErrorCode    string       `json:"code"`
-	ErrorMessage string       `json:"message"`
+	Status       string        `json:"status"`
+	TotalResults int           `json:"totalResults"`
+	Articles     []*ApiArticle `json:"articles"`
+	ErrorCode    string        `json:"code"`
+	ErrorMessage string        `json:"message"`
 }

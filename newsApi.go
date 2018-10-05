@@ -15,12 +15,10 @@ type NewsApi struct {
 	client *http.Client
 }
 
-func (api *NewsApi) Init(url, key string) error {
+func (api *NewsApi) Init(url, key string) {
 	api.url = url
 	api.key = key
 	api.client = &http.Client{}
-
-	return nil
 }
 
 func (api *NewsApi) FetchSources() (*ApiSourcesResponse, error) {
