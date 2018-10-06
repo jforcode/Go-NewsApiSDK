@@ -12,11 +12,11 @@ func (refr *Refresher) Init(newsApi *NewsApi) {
 	refr.newsApi = newsApi
 }
 
-func (refr *Refresher) DailyRefresh(config *RefresherConfig, chArticles chan []*ApiArticle, chNumTransactionsUpdated chan int, chError chan error) {
+func (refr *Refresher) DailyRefresh(config *RefresherConfig, chArticles chan []*ApiArticle, chNumRequestsUpdated chan int, chError chan error) {
 	// prefix := "newsApi.Refresher.FetchArticles"
 	closeChannels := func() {
 		close(chArticles)
-		close(chNumTransactionsUpdated)
+		close(chNumRequestsUpdated)
 		close(chError)
 	}
 
@@ -42,7 +42,7 @@ func (refr *Refresher) DailyRefresh(config *RefresherConfig, chArticles chan []*
 			}
 
 			remainingRequests--
-			chNumTransactionsUpdated <- 1
+			chNumRequestsUpdated <- 1
 
 			endIndex := minInt(startIndex+config.SourcesBatchSize, lenSourceIds)
 			batchSources := config.SourceIds[startIndex:endIndex]
