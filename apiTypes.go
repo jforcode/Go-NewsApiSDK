@@ -3,13 +3,13 @@ package newsApi
 import "time"
 
 type ApiError struct {
-	status  string
-	code    string
-	message string
+	Status  string `json:"status"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
 }
 
-func (apiErr *ApiError) Error() string {
-	return apiErr.code + " - " + apiErr.message
+func (apiErr ApiError) Error() string {
+	return apiErr.Code + " - " + apiErr.Message
 }
 
 // NewsAPI response types
@@ -21,13 +21,6 @@ type ApiSource struct {
 	Category    string `json:"category"`
 	Language    string `json:"language"`
 	Country     string `json:"country"`
-}
-
-type ApiSourcesResponse struct {
-	Status       string       `json:"status"`
-	Sources      []*ApiSource `json:"sources"`
-	ErrorCode    string       `json:"code"`
-	ErrorMessage string       `json:"message"`
 }
 
 type ApiArticleSource struct {
@@ -45,10 +38,13 @@ type ApiArticle struct {
 	PublishedAt time.Time        `json:"publishedAt"`
 }
 
+type ApiSourcesResponse struct {
+	Status  string       `json:"status"`
+	Sources []*ApiSource `json:"sources"`
+}
+
 type ApiArticlesResponse struct {
 	Status       string        `json:"status"`
 	TotalResults int           `json:"totalResults"`
 	Articles     []*ApiArticle `json:"articles"`
-	ErrorCode    string        `json:"code"`
-	ErrorMessage string        `json:"message"`
 }

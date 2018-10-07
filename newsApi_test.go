@@ -24,7 +24,7 @@ func TestGet(t *testing.T) {
 	api.Init(server.URL, "Test API Key")
 
 	t.Run("valid api call", func(t *testing.T) {
-		api.get("test", nil)
+		api.getResponse("test", nil, nil)
 	})
 
 	t.Run("api call without api key", func(t *testing.T) {

@@ -24,14 +24,10 @@ func (api *NewsApi) Init(url, key string) {
 func (api *NewsApi) FetchSources() (*ApiSourcesResponse, error) {
 	prefix := "newsApi.NewsApi.FetchSources"
 
-	bodyBytes, err := api.get("sources", nil)
-	if err != nil {
-		return nil, errors.New(prefix + " (Api Get): " + err.Error())
-	}
-
 	var sourceResponse ApiSourcesResponse
-	if err := json.Unmarshal(bodyBytes, &sourceResponse); err != nil {
-		return nil, errors.New(prefix + " (json unmarshal): " + err.Error())
+	err := api.getResponse("sources", nil, &sourceResponse)
+	if err != nil {
+		return nil, switchAndGetErr(prefix+" (Api get response): ", err)
 	}
 
 	return &sourceResponse, nil
@@ -45,27 +41,32 @@ func (api *NewsApi) FetchArticles(sourceIds []string, pageNum, pageSize int) (*A
 	params["page"] = strconv.Itoa(pageNum)
 	params["pageSize"] = strconv.Itoa(pageSize)
 
-	bodyBytes, err := api.get("everything", params)
-	if err != nil {
-		return nil, errors.New(prefix + " (Api get): " + err.Error())
-	}
-
 	var articleResponse ApiArticlesResponse
-	if err := json.Unmarshal(bodyBytes, &articleResponse); err != nil {
-		return nil, errors.New(prefix + " (json unmarshal): " + err.Error())
+	err := api.getResponse("everything", params, &articleResponse)
+	if err != nil {
+		return nil, switchAndGetErr(prefix+" (Api get response): ", err)
 	}
 
 	return &articleResponse, nil
 }
 
+func switchAndGetErr(prefix string, err error) error {
+	switch err.(type) {
+	case ApiError:
+		return err
+	default:
+		return errors.New(prefix + err.Error())
+	}
+}
+
 // TODO: handle errors better
 // if NOT 200 OK, then return a ApiError
-func (api *NewsApi) get(endpoint string, params map[string]string) ([]byte, error) {
+func (api *NewsApi) getResponse(endpoint string, params map[string]string, toResponse interface{}) error {
 	prefix := "newsApi.NewsApi.get"
 
 	req, err := http.NewRequest("GET", api.url+"/"+endpoint, nil)
 	if err != nil {
-		return nil, errors.New(prefix + " (http request): " + err.Error())
+		return errors.New(prefix + " (http request): " + err.Error())
 	}
 
 	req.Header.Add("X-Api-Key", api.key)
@@ -80,18 +81,29 @@ func (api *NewsApi) get(endpoint string, params map[string]string) ([]byte, erro
 
 	resp, err := api.client.Do(req)
 	if err != nil {
-		return nil, errors.New(prefix + " (client do): " + err.Error())
+		return errors.New(prefix + " (client do): " + err.Error())
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(prefix + " (HTTP Status Error): " + resp.Status)
-	}
-
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errors.New(prefix + " (read): " + err.Error())
+		return errors.New(prefix + " (read): " + err.Error())
 	}
 
-	return bodyBytes, nil
+	if resp.StatusCode != http.StatusOK {
+		var apiErr ApiError
+		err = json.Unmarshal(bodyBytes, &apiErr)
+		if err != nil {
+			return errors.New(prefix + " (unmarshal api error): " + err.Error())
+		}
+
+		return apiErr
+	}
+
+	err = json.Unmarshal(bodyBytes, toResponse)
+	if err != nil {
+		return errors.New(prefix + " (unmarshal api response): " + err.Error())
+	}
+
+	return nil
 }
