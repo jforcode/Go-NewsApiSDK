@@ -48,7 +48,7 @@ func (refr *Refresher) DailyRefresh(config *RefresherConfig, chArticles chan []*
 
 			endIndex := minInt(startIndex+config.SourcesBatchSize, lenSourceIds)
 			batchSources := config.SourceIds[startIndex:endIndex]
-			articlesResponse, err := refr.newsApi.FetchArticles(batchSources, pageNum, config.PageSize)
+			articlesResponse, err := refr.newsApi.FetchEverything(batchSources, pageNum, config.PageSize)
 
 			if err != nil {
 				chError <- deepError.DeepErr{

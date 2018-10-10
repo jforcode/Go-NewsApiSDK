@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/jforcode/DeepError"
 )
@@ -22,6 +23,18 @@ func (api *NewsApi) Init(url, key string) {
 	api.client = &http.Client{}
 }
 
+type FetchSourcesParams struct {
+	categories Category
+	languages  Language
+	countries  Country
+}
+
+// TODO
+func (params *FetchSourcesParams) Validate() error {
+	return nil
+}
+
+// TODO
 func (api *NewsApi) FetchSources() (*ApiSourcesResponse, error) {
 	fnName := "newsApi.NewsApi.FetchSources"
 
@@ -34,8 +47,59 @@ func (api *NewsApi) FetchSources() (*ApiSourcesResponse, error) {
 	return &sourceResponse, nil
 }
 
-func (api *NewsApi) FetchArticles(sourceIds []string, pageNum, pageSize int) (*ApiArticlesResponse, error) {
-	fnName := "newsApi.NewsApi.FetchArticles"
+type FetchEverythingParams struct {
+	q              string
+	sources        []string
+	domains        []string
+	excludeDomains []string
+	from           time.Time
+	to             time.Time
+	language       Language
+	sortBy         SortBy
+	pageSize       int
+	page           int
+}
+
+// TODO
+func (params *FetchEverythingParams) Validate() error {
+	return nil
+}
+
+// TODO
+func (api *NewsApi) FetchEverything(sourceIds []string, pageNum, pageSize int) (*ApiArticlesResponse, error) {
+	fnName := "newsApi.NewsApi.FetchEverything"
+
+	params := make(map[string]string)
+	params["sources"] = strings.Join(sourceIds, ",")
+	params["page"] = strconv.Itoa(pageNum)
+	params["pageSize"] = strconv.Itoa(pageSize)
+
+	var articleResponse ApiArticlesResponse
+	err := api.getResponse("everything", params, &articleResponse)
+	if err != nil {
+		return nil, deepError.New(fnName, "getting articles response", err)
+	}
+
+	return &articleResponse, nil
+}
+
+type FetchTopHeadlinesParams struct {
+	country  Country
+	category Category
+	sources  []string
+	q        string
+	pageSize int
+	page     int
+}
+
+// TODO
+func (params *FetchTopHeadlinesParams) Validate() error {
+	return nil
+}
+
+// TODO
+func (api *NewsApi) FetchTopHeadlines(sourceIds []string, pageNum, pageSize int) (*ApiArticlesResponse, error) {
+	fnName := "newsApi.NewsApi.FetchTopHeadlines"
 
 	params := make(map[string]string)
 	params["sources"] = strings.Join(sourceIds, ",")
