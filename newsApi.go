@@ -2,11 +2,12 @@ package newsApi
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/jforcode/DeepError"
 )
 
 type NewsApi struct {
@@ -22,19 +23,19 @@ func (api *NewsApi) Init(url, key string) {
 }
 
 func (api *NewsApi) FetchSources() (*ApiSourcesResponse, error) {
-	prefix := "newsApi.NewsApi.FetchSources"
+	fnName := "newsApi.NewsApi.FetchSources"
 
 	var sourceResponse ApiSourcesResponse
 	err := api.getResponse("sources", nil, &sourceResponse)
 	if err != nil {
-		return nil, switchAndGetErr(prefix+" (Api get response): ", err)
+		return nil, deepError.New(fnName, "getting sources response", err)
 	}
 
 	return &sourceResponse, nil
 }
 
 func (api *NewsApi) FetchArticles(sourceIds []string, pageNum, pageSize int) (*ApiArticlesResponse, error) {
-	prefix := "newsApi.NewsApi.FetchArticles"
+	fnName := "newsApi.NewsApi.FetchArticles"
 
 	params := make(map[string]string)
 	params["sources"] = strings.Join(sourceIds, ",")
@@ -44,29 +45,18 @@ func (api *NewsApi) FetchArticles(sourceIds []string, pageNum, pageSize int) (*A
 	var articleResponse ApiArticlesResponse
 	err := api.getResponse("everything", params, &articleResponse)
 	if err != nil {
-		return nil, switchAndGetErr(prefix+" (Api get response): ", err)
+		return nil, deepError.New(fnName, "getting articles response", err)
 	}
 
 	return &articleResponse, nil
 }
 
-func switchAndGetErr(prefix string, err error) error {
-	switch err.(type) {
-	case ApiError:
-		return err
-	default:
-		return errors.New(prefix + err.Error())
-	}
-}
-
-// TODO: handle errors better
-// if NOT 200 OK, then return a ApiError
 func (api *NewsApi) getResponse(endpoint string, params map[string]string, toResponse interface{}) error {
-	prefix := "newsApi.NewsApi.get"
+	fnName := "newsApi.NewsApi.get"
 
 	req, err := http.NewRequest("GET", api.url+"/"+endpoint, nil)
 	if err != nil {
-		return errors.New(prefix + " (http request): " + err.Error())
+		return deepError.New(fnName, "making http request", err)
 	}
 
 	req.Header.Add("X-Api-Key", api.key)
@@ -81,20 +71,20 @@ func (api *NewsApi) getResponse(endpoint string, params map[string]string, toRes
 
 	resp, err := api.client.Do(req)
 	if err != nil {
-		return errors.New(prefix + " (client do): " + err.Error())
+		return deepError.New(fnName, "client do", err)
 	}
 	defer resp.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return errors.New(prefix + " (read): " + err.Error())
+		return deepError.New(fnName, "reading response", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		var apiErr ApiError
 		err = json.Unmarshal(bodyBytes, &apiErr)
 		if err != nil {
-			return errors.New(prefix + " (unmarshal api error): " + err.Error())
+			return deepError.New(fnName, "unmarshalling api error", err)
 		}
 
 		return apiErr
@@ -102,7 +92,7 @@ func (api *NewsApi) getResponse(endpoint string, params map[string]string, toRes
 
 	err = json.Unmarshal(bodyBytes, toResponse)
 	if err != nil {
-		return errors.New(prefix + " (unmarshal api response): " + err.Error())
+		return deepError.New(fnName, "unmarshalling api response", err)
 	}
 
 	return nil

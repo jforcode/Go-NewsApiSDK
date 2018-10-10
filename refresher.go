@@ -2,6 +2,8 @@ package newsApi
 
 import (
 	"time"
+
+	"github.com/jforcode/DeepError"
 )
 
 type Refresher struct {
@@ -13,7 +15,7 @@ func (refr *Refresher) Init(newsApi *NewsApi) {
 }
 
 func (refr *Refresher) DailyRefresh(config *RefresherConfig, chArticles chan []*ApiArticle, chNumRequestsUpdated chan int, chError chan error) {
-	// prefix := "newsApi.Refresher.FetchArticles"
+	prefix := "newsApi.Refresher.FetchArticles"
 	closeChannels := func() {
 		close(chArticles)
 		close(chNumRequestsUpdated)
@@ -49,7 +51,11 @@ func (refr *Refresher) DailyRefresh(config *RefresherConfig, chArticles chan []*
 			articlesResponse, err := refr.newsApi.FetchArticles(batchSources, pageNum, config.PageSize)
 
 			if err != nil {
-				chError <- err // TODO: better error format
+				chError <- deepError.DeepErr{
+					Function: prefix,
+					Action:   "fetching articles",
+					Cause:    err,
+				}
 			} else {
 				chArticles <- articlesResponse.Articles
 			}

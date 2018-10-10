@@ -1,6 +1,11 @@
 package newsApi
 
-import "errors"
+import (
+	"errors"
+	"strings"
+
+	"github.com/jforcode/DeepError"
+)
 
 type RefresherConfig struct {
 	RemainingRequests int
@@ -13,39 +18,56 @@ type RefresherConfig struct {
 }
 
 func (config *RefresherConfig) Validate() error {
+	fnName := "newsApi.RefresherConfig.Validate"
+
+	errs := make([]string, 0)
 	if config.SourceIds == nil || len(config.SourceIds) == 0 {
-		return errors.New("Invalid source ids")
+		errs = append(errs, "Invalid Source IDs")
 	}
 
 	if config.SourcesBatchSize == 0 {
 		config.SourcesBatchSize = 20
 	} else if config.SourcesBatchSize < 1 || config.SourcesBatchSize > 20 {
-		return errors.New("Invalid sources batch size")
+		errs = append(errs, "Invalid sources batch size")
 	}
 
 	if config.StartPageNum == 0 {
 		config.StartPageNum = 1
 	} else if config.StartPageNum < 1 {
-		return errors.New("Invalid start page number")
+		errs = append(errs, "Invalid start page number")
 	}
 
 	if config.PageSize == 0 {
 		config.PageSize = 10
 	} else if config.PageSize < 1 || config.PageSize > 100 {
-		return errors.New("Invalid page size")
+		errs = append(errs, "Invalid page size")
 	}
 
 	if config.LastMomentMinutes == 0 {
 		config.LastMomentMinutes = 30
 	} else if config.LastMomentMinutes < 1 {
-		return errors.New("Invalid last moment minutes")
+		errs = append(errs, "Invalid last moment minutes")
 	}
 
 	if config.SleepSeconds == 0 {
 		config.SleepSeconds = 60
 	} else if config.SleepSeconds < 1 {
-		return errors.New("Invalid sleep seconds")
+		errs = append(errs, "Invalid sleep seconds")
 	}
 
-	return nil
+	errsI := make([]interface{}, len(errs))
+	for ind, err := range errs {
+		errsI[ind] = err
+	}
+
+	if len(errs) == 0 {
+		return nil
+	} else {
+		return deepError.DeepErr{
+			Function: fnName,
+			Action:   "validating",
+			Params:   errsI,
+			Cause:    errors.New(strings.Join(errs, "|")),
+		}
+	}
 }
