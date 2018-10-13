@@ -12,7 +12,6 @@ func (apiErr ApiError) Error() string {
 	return apiErr.Code + " - " + apiErr.Message
 }
 
-// NewsAPI response types
 type ApiSource struct {
 	Id          string `json:"id"`
 	Name        string `json:"name"`

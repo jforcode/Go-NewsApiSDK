@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/jforcode/DeepError"
+	"github.com/jforcode/Util"
 )
 
 const (
@@ -23,10 +24,12 @@ type NewsApi struct {
 	client *http.Client
 }
 
-func (api *NewsApi) Init(url, key string) {
-	api.url = url
-	api.key = key
-	api.client = &http.Client{}
+func New(url, key string) *NewsApi {
+	return &NewsApi{
+		url,
+		key,
+		&http.Client{},
+	}
 }
 
 type FetchSourcesParams struct {
@@ -125,13 +128,13 @@ func (params *FetchEverythingParams) GetRequestParamsMap() (map[string]string, e
 	if params.Q != "" {
 		reqParams["q"] = params.Q
 	}
-	if !isEmptyArr(params.Sources) {
+	if !util.Array.IsEmptyStringArray(params.Sources) {
 		reqParams["sources"] = strings.Join(params.Sources, ",")
 	}
-	if !isEmptyArr(params.Domains) {
+	if !util.Array.IsEmptyStringArray(params.Domains) {
 		reqParams["domains"] = strings.Join(params.Domains, ",")
 	}
-	if !isEmptyArr(params.ExcludeDomains) {
+	if !util.Array.IsEmptyStringArray(params.ExcludeDomains) {
 		reqParams["excludeDomains"] = strings.Join(params.ExcludeDomains, ",")
 	}
 	if !params.From.IsZero() {
@@ -185,7 +188,7 @@ type FetchTopHeadlinesParams struct {
 func (params *FetchTopHeadlinesParams) Validate() error {
 	fnName := "newsApi.FetchTopHeadlinesParams.Validate"
 
-	if !isEmptyArr(params.Sources) && (params.Country != "" || params.Category != "") {
+	if !util.Array.IsEmptyStringArray(params.Sources) && (params.Country != "" || params.Category != "") {
 		return deepError.DeepErr{
 			Function: fnName,
 			Action:   "validating sources, country and category",
@@ -219,7 +222,7 @@ func (params *FetchTopHeadlinesParams) GetRequestParamsMap() (map[string]string,
 	if params.Category != "" {
 		reqParamsMap["category"] = string(params.Category)
 	}
-	if !isEmptyArr(params.Sources) {
+	if !util.Array.IsEmptyStringArray(params.Sources) {
 		reqParamsMap["sources"] = strings.Join(params.Sources, ",")
 	}
 	if params.Q != "" {

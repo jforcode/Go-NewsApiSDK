@@ -20,8 +20,7 @@ func TestGet(t *testing.T) {
 	}))
 	defer server.Close()
 
-	api := &NewsApi{}
-	api.Init(server.URL, "Test API Key")
+	api := New(server.URL, "Test API Key")
 
 	t.Run("valid api call", func(t *testing.T) {
 		api.getResponse("test", nil, nil)

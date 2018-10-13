@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jforcode/DeepError"
+	"github.com/jforcode/Util"
 )
 
 type RefresherConfig struct {
@@ -113,7 +114,7 @@ func (refr *Refresher) DailyRefresh(config *RefresherConfig, chArticles chan []*
 			remainingRequests--
 			chNumRequestsUpdated <- 1
 
-			endIndex := minInt(startIndex+config.SourcesBatchSize, lenSourceIds)
+			endIndex := util.Math.MinInt(startIndex+config.SourcesBatchSize, lenSourceIds)
 			batchSources := config.SourceIds[startIndex:endIndex]
 
 			articlesResponse, err := refr.newsApi.FetchEverything(&FetchEverythingParams{
