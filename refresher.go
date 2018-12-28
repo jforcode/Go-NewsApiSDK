@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jforcode/DeepError"
-	"github.com/jforcode/Util"
+	"github.com/jforcode/Go-DeepError"
+	"github.com/jforcode/Go-Util"
 )
 
 type RefresherConfig struct {
